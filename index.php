@@ -1,27 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html <?php language_attributes(); ?>>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php wp_head(); ?>
 </head>
-<body>
+<?php wp_body_open(); ?>
+<body <?php body_class(); ?>>
     <div id="container">
         <header id="site-header">
-            <h1><?php bloginfo('name'); ?></h1>
+            <?php if ( is_home() ): ?>
+                <h1 id="site-title"><a href="<?php echo esc_url( home_url() ); ?>"><?php bloginfo('name'); ?></a></h1>
+            <?php else: ?>
+                <p id="site-title"><a href="<?php echo esc_url( home_url() ); ?>"><?php bloginfo('name'); ?></a></p>
+            <?php endif; ?>
         </header>
         <?php wp_nav_menu([
             'theme_location' => 'primary-navigation',
             'container_id'   => 'primary-navigation',
             'container'      => 'nav',
+            // If menus removed then set fallback_cb
+            'fallback_cb'    => '__return_false',
+            // Prevent menu depth more than 1
+            'depth'          => 1
         ]); ?>
         <main id="site-content">
             <?php if ( have_posts() ): ?>
                 <?php while ( have_posts() ): the_post(); ?>
-                <article>
+                <article <?php post_class(); ?>>
                     <?php if ( is_singular() ): ?>
                         <?php the_title( '<h1>', '</h1>' ); ?>
                         <?php the_content(); ?>
+                        <?php wp_link_pages(); ?>
                     <?php else: ?>
                         <?php the_title( '<h2><a href="'. get_permalink() .'">', '</a></h2>' ); ?>
                         <?php the_excerpt(); ?>
